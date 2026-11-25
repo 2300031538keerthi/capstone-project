@@ -1,0 +1,148 @@
+# Deliverable D5: Independent Acceptance Test Report & Negative Campaign
+
+**Capstone Project ID**: KLCAP-2026-00340  
+**Phase**: Capstone Project II (CP2 / Objective O5)  
+**Deliverable**: D5 — Final Acceptance Test Report, KPI Scorecards, and NT-1..6 Negative Audit  
+
+---
+
+## 1. Acceptance Campaign Summary
+
+The independent acceptance testing campaign executed under conditions **AC-1** (Representative Operation), **AC-2** (Boundary and Failure Operation), **AC-3** (Held-Out Evaluation Mechanics on 70/30 Synthetic Partition), and **AC-4** (Frozen Resource Envelope).
+
+### Test Suite Execution Summary
+- **Multi-Tier Pytest Suite**: **264 automated tests passed (176 unit, integration, challenge, compatibility, and acceptance-contract tests + 88 5-tier E2E tests; 100% pass rate)**
+- **Independent Acceptance Harness (`tests/run_acceptance.py`)**: **PASSED (Exit code 0; AC-1, AC-2, AC-3, strict 30-trial AC-4 with zero small-runtime exemptions, NT-1..NT-6)**
+- **Synthetic Scale Benchmark Suite (`benchmarks/run_benchmarks.py`)**: **PASSED (Exit code 0; 5 warmup + 30 measured trials per scale across $N \in \{200, 1000, 3000\}$, zero small-runtime exemptions)**
+
+---
+
+## 2. KPI Scorecard and Pass Contract Verification
+
+| KPI ID | Metric Description | Baseline (O2 Apriori) | Target / Pass Rule | Achieved Result | Status |
+|---|---|---|---|---|---|
+| **KPI-1** | Frequent-itemset precision & recall vs oracle (%) | 100.0% / 100.0% | $\ge 98.0\%$ | **100.00% / 100.00%** (bit-exact $\Delta_{\mathrm{supp}} = 0.0$) | **PASS** |
+| **KPI-2** | Rule-metric analytical oracle rubric | Max error $2.22 \times 10^{-16}$ | Score $\ge 80/100$ (Rubric: 100 for $< 10^{-9}$, 90 for $< 10^{-6}$, 70 for $< 10^{-4}$) | **100.0 / 100** ($2.22 \times 10^{-16}$) | **PASS** |
+| **KPI-3** | Peak candidate count | 105 candidates (scales 200–3000) | $\ge 5\%$ reduction or bounded | **56.2% – 100.0% reduction**; capped under dense stress (NT-1/NT-6) | **PASS** |
+| **KPI-4** | Runtime by transaction scale (strict 30-trial p95, monotonic clock, no exemptions) | Reference p95 | $p95 \le 0.80 \times$ O2 at equal quality, 0 failures | **AC-4 ($1000 \times 12$)**: FP `0.315×` (`0.471 ms` vs `1.496 ms`), Eclat `0.180×` (`0.269 ms` vs `1.496 ms`); **Scales 200–3000**: FP `0.262–0.327×` (engine) / `0.235–0.375×` (est), Eclat `0.215–0.317×` (engine) / `0.213–0.333×` (est); 0 failures | **PASS** |
+| **KPI-5** | Peak memory (`tracemalloc`) & memory envelope | 0.033 – 0.129 MB (synthetic) | Monitored & bounded without critical regression | **0.033 – 0.181 MB** on small synthetic scales (fixed buffer floor `1.00–1.39×`; candidate/memory governor prevents OOM on dense explosion) | **MONITORED / BOUNDED** |
+| **KPI-6** | Estimator API compliance pass rate | 100.0% | 100.0% | **100.0% (7/7 checks passed)** | **PASS** |
+
+### Strict Charter KPI-4 Verification Table (AC-4 Workload: $N=1000, M=12, p=0.25, s_{\min}=0.08$)
+Measured by `tests/run_acceptance.py` with **5 warmup trials + 30 measured trials** using `time.perf_counter()` (zero small-runtime exemptions):
+
+| Engine | p50 (ms) | p95 (ms) | p99 (ms) | Failures | p95 Ratio vs Apriori | Speedup | Max $\Delta_{\mathrm{supp}}$ | Strict Rule ($\le 0.80\times$) |
+|---|---|---|---|---|---|---|---|---|
+| **Apriori (O2 Ref)** | 1.134 ms | 1.496 ms | 1.605 ms | 0 | 1.000× | 1.00× | Reference | Reference |
+| **FP-Growth (CP2)** | 0.369 ms | **0.471 ms** | 0.577 ms | 0 | **0.315×** | **3.17×** | `0.00e+00` | **PASS** |
+| **Eclat (CP2)** | 0.243 ms | **0.269 ms** | 0.372 ms | 0 | **0.180×** | **5.56×** | `0.00e+00` | **PASS** |
+
+### KPI-2 Analytical Ground Truth Oracle Scoring Rule
+The evaluation of KPI-2 is strictly deterministic, numerical, and automated:
+- **Oracle Basis**: Pre-computed closed-form analytical ground truth oracle (`ORACLE_RULES_0_4_CONF_0_6`) over hand-verified transactional fixtures.
+- **Maximum Absolute Discrepancy**: $\Delta_{\max} = \max_{r \in \mathcal{R}, m \in \{\text{supp}, \text{conf}, \text{lift}, \text{lev}\}} |m_{\text{skarm}}(r) - m_{\text{oracle}}(r)|$.
+- **Objective Rubric Scoring Function**:
+  $$\text{Score} = \begin{cases} 
+  100.0 & \text{if } \Delta_{\max} < 10^{-9} \\ 
+  90.0 & \text{if } \Delta_{\max} < 10^{-6} \\ 
+  70.0 & \text{if } \Delta_{\max} < 10^{-4} \\ 
+  0.0 & \text{otherwise} 
+  \end{cases}$$
+- **Target Contract**: Score $\ge 80.0 / 100$ (Achieved: $100.0 / 100$ with $\Delta_{\max} = 2.22 \times 10^{-16}$). Zero human raters or subjective qualitative rubrics are involved.
+
+---
+
+## 3. Negative-Test and Recovery Campaign Audit (NT-1 through NT-6)
+
+Every negative condition mandated by the project charter was explicitly constructed, triggered, and verified:
+
+### NT-1: Dense Transactions Causing Candidate Explosion
+- **Trigger**: 22-item, 100% dense transaction matrix (which would generate $\sum_{k=1}^{22} \binom{22}{k} = 4,194,303$ candidates unconstrained).
+- **Safety Bound**: `max_candidates = 500`.
+- **Observed Behavior**: Candidate count at level 3 crossed 500.
+- **Safe Response**: Halted deeper candidate exploration, set `is_degraded_ = True`, emitted `DegradedModeWarning`, returned partial valid rules without crashing.
+- **Residual Risk**: High-order itemsets ($k \ge 3$) omitted; lower-order rules retained with 100% validity.
+- **Result**: **PASS**.
+
+### NT-2: Rare and Duplicate Items
+- **Trigger**: Transactions containing repeated duplicate tokens (`['A', 'A', 'A', 'B', 'B']`) and rare singletons.
+- **Observed Behavior**: `TransactionEncoder` performed idempotent deduplication. Support arithmetic was not inflated.
+- **Safe Response**: Accurate item frequency calculated; rare items pruned below `min_support`.
+- **Residual Risk**: None; idempotent data integrity verified.
+- **Result**: **PASS**.
+
+### NT-3: Weighted and Repeated Transactions
+- **Trigger**: Transactions with non-uniform `sample_weight` vector (`[3.0, 1.0, 6.0]`) and repeated identical transaction rows.
+- **Observed Behavior**: Support matched exact weighted analytical formula ($\sum w_i \cdot \mathbf{1}_{T_i} / \sum w_i$).
+- **Safe Response**: Negative weights correctly intercepted with `ValueError`.
+- **Residual Risk**: None; certified floating point weighted arithmetic.
+- **Result**: **PASS**.
+
+### NT-4: Minimum-Support Boundary Cases
+- **Trigger**: Boundary thresholds `min_support = 0.0`, `min_support = 1.0`, and invalid values (`1.5`, `-0.05`).
+- **Observed Behavior**: Invalid parameters raised `BoundaryConditionError`; extreme valid thresholds operated gracefully without exception.
+- **Safe Response**: Strict bounds checking on `[0.0, 1.0]`.
+- **Residual Risk**: `min_support = 0.0` on large feature sets can produce large outputs; governed by `max_candidates`.
+- **Result**: **PASS**.
+
+### NT-5: Deterministic Ordering and Serialization
+- **Trigger**: Multiple execution passes on shuffled items; serialization cycle using `joblib.dump` and `joblib.load`.
+- **Observed Behavior**: Bit-identical DataFrame ordering; serialized estimator restored exact state, rules, and parameters.
+- **Safe Response**: Deterministic sorting keys enforced across all mining and rule generation routines.
+- **Residual Risk**: None; deterministic repeatability certified.
+- **Result**: **PASS**.
+
+### NT-6: Dense Transactions Stress Test
+- **Trigger**: Synthetic stress workload with 20 items, 50 samples, and 80% item density under `fpgrowth` and `apriori`.
+- **Observed Behavior**: Engine safely capped candidate exploration, logged telemetry, and prevented memory spikes.
+- **Safe Response**: Safe degradation mode maintained stability.
+- **Residual Risk**: Capped at maximum configured candidate threshold.
+- **Result**: **PASS**.
+
+### AC-3: Held-Out Evaluation Mechanics on 70/30 Synthetic Split
+- **Split Protocol**: 70/30 train/validation partition on a seeded synthetic 100 x 10 transaction matrix.
+- **Scope & Qualification**: Demonstrates held-out evaluation mechanics, unsupervised scoring, transformation, and prediction without data leakage; this verifies evaluation pipeline mechanics rather than extensive real-world generalization evidence.
+- **Verification**: Rules and frequent itemsets fitted strictly on training partition (70 samples); held-out validation partition (30 samples) evaluated via `score()`, `transform()`, and `predict()`.
+- **Zero Leakage**: Strict feature and support isolation confirmed with zero training-to-validation leakage.
+- **Result**: **PASS**.
+
+---
+
+## 4. Real-World Benchmark Dataset Empirical Results
+
+To corroborate the synthetic acceptance harness on real-world benchmark datasets, `skarm` was evaluated on three canonical repositories under a research-grade evaluation protocol:
+1. **Groceries Market Basket** ($N = 9,835$, $M = 169$ unique grocery categories, 4.41 avg items/tx, $97.39\%$ sparsity).
+2. **Chess Benchmark** ($N = 3,196$, $M = 75$ configurations, $49.33\%$ density combinatorial stress benchmark).
+3. **Retail Benchmark** ($N = 88,162$ transactions, $M = 16,470$ items, $99.94\%$ sparsity).
+
+### Empirical Performance Summary
+
+| Benchmark Dataset | Algorithm | Support $s_{\min}$ | Runtime (s) | Itemsets Mined | Rules Generated | Throughput (tx/s) |
+|---|---|---|---|---|---|---|
+| **Groceries** ($N = 9,835$) | Apriori Baseline | 0.01 | 2.016 s | 333 | 170 | 4,878 tx/s |
+| | FP-Growth | 0.01 | 0.867 s | 333 | 170 | 11,344 tx/s |
+| | Eclat (Vertical) | 0.01 | **0.299 s** | 333 | 170 | **32,893 tx/s** |
+| **Chess** ($N = 3,196$, Dense) | Apriori Baseline | 0.85 | 4.467 s | 2,669 | 80,121 | 715 tx/s |
+| | FP-Growth | 0.85 | **2.679 s** | 2,669 | 80,121 | **1,193 tx/s** |
+| | Eclat (Vertical) | 0.85 | 2.878 s | 2,669 | 80,121 | 1,110 tx/s |
+| | Capped Apriori (NT-1/6) | 0.75 | 1.042 s | 1,067 | Degraded Mode | Safe Recovery |
+| **Retail** ($N = 88,162$, Sparse) | Apriori Baseline | 0.03 | 7.340 s | 32 | 24 | 12,011 tx/s |
+| | FP-Growth | 0.02 | 7.634 s | 55 | 50 | 11,549 tx/s |
+| | Eclat (Vertical) | 0.02 | **2.778 s** | 55 | 50 | **31,736 tx/s** |
+
+### Top Discovered Real Market Basket Rules (Groceries)
+- `['curd'] -> ['whole milk', 'yogurt']`: Support = 0.0101, Confidence = 0.1889, Lift = 3.3723, Zhang's = +0.7431
+- `['citrus fruit', 'other vegetables'] -> ['root vegetables']`: Support = 0.0104, Confidence = 0.3592, Lift = 3.2950, Zhang's = +0.7172
+- `['other vegetables', 'yogurt'] -> ['whipped/sour cream']`: Support = 0.0102, Confidence = 0.2342, Lift = 3.2671, Zhang's = +0.7254
+- `['other vegetables', 'tropical fruit'] -> ['root vegetables']`: Support = 0.0123, Confidence = 0.3428, Lift = 3.1448, Zhang's = +0.7074
+- `['beef'] -> ['root vegetables']`: Support = 0.0174, Confidence = 0.3314, Lift = 3.0404, Zhang's = +0.7083
+- `['other vegetables', 'yogurt'] -> ['whole milk']`: Support = 0.0223, Confidence = 0.5129, Lift = 2.0072, Zhang's = +0.5246
+
+### Verification Against Analytical Oracle Formulations
+All discovered rule metrics (support, confidence, lift, leverage, conviction, and Zhang's metric) on real-world datasets are computed directly via closed-form analytical equations ($S(X \cup Y)/N$, $S(X \cup Y)/S(X)$, etc.) matching the KPI-2 ground-truth oracle specifications with zero qualitative human rating.
+
+---
+
+## 5. Final Gate Conclusion
+
+**ALL CRITERIA SATISFIED**. The software has completed end-to-end verification across both synthetic acceptance partitions and large-scale real-world datasets ($N = 88,162$), satisfying all KPIs and institutional requirements for research-grade evaluation and academic defense readiness.

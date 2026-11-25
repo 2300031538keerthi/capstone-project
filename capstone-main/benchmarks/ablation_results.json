@@ -1,0 +1,1139 @@
+{
+  "metadata": {
+    "title": "SKARM Bounded vs Exact Pruning Ablation Campaign",
+    "timestamp": "2026-11-25T04:38:02Z",
+    "git_commit": "ad2b9a841b6506fdfb4d6e56a0990dd9096b2da7",
+    "platform": "AMD64, Windows 11",
+    "python_version": "3.12.10",
+    "packages": {
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1"
+    },
+    "candidate_caps": [
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000
+    ],
+    "max_lens": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "None"
+    ],
+    "datasets": {
+      "chess": {
+        "file": "chess.dat",
+        "support": 0.85,
+        "type": "dense",
+        "description": "Dense game board (N=3,196, 49.3% density, L_avg=37.0)",
+        "algorithm": "apriori"
+      },
+      "adult_census": {
+        "file": "adult_census.dat",
+        "support": 0.4,
+        "type": "medium",
+        "description": "Medium census survey (N=32,561, 6.2% density, L_avg=13.9)",
+        "algorithm": "fpgrowth"
+      },
+      "bms_pos": {
+        "file": "BMS-POS.csv",
+        "support": 0.05,
+        "type": "sparse",
+        "description": "Sparse point-of-sale clickstream (N=515,596, 0.4% density, L_avg=6.5)",
+        "algorithm": "eclat"
+      }
+    }
+  },
+  "candidate_sweeps": {
+    "chess": {
+      "baseline": {
+        "n_itemsets": 2669,
+        "n_rules": 95482,
+        "fit_time_s": 8.5508,
+        "status": "EXACT",
+        "is_degraded": false,
+        "counters": {
+          "candidates_generated": 2892,
+          "joins_attempted": 6698,
+          "scans_performed": 9003132,
+          "support_evaluations": 2892,
+          "itemsets_discovered": 2669
+        }
+      },
+      "records": [
+        {
+          "candidate_cap": 50,
+          "n_itemsets": 16,
+          "n_rules": 0,
+          "itemset_recall": 0.005995,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 0.5361,
+          "speedup_factor": 15.95,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 2: 51 candidates exceeds max_candidates=50.",
+          "level_halted": 2,
+          "candidates_generated_at_level": 51,
+          "candidates_remaining_at_level": 51,
+          "peak_candidates": 51,
+          "counters": {
+            "candidates_generated": 126,
+            "joins_attempted": 51,
+            "scans_performed": 0,
+            "support_evaluations": 75,
+            "itemsets_discovered": 16
+          }
+        },
+        {
+          "candidate_cap": 100,
+          "n_itemsets": 16,
+          "n_rules": 0,
+          "itemset_recall": 0.005995,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 0.4988,
+          "speedup_factor": 17.14,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 2: 101 candidates exceeds max_candidates=100.",
+          "level_halted": 2,
+          "candidates_generated_at_level": 101,
+          "candidates_remaining_at_level": 101,
+          "peak_candidates": 101,
+          "counters": {
+            "candidates_generated": 176,
+            "joins_attempted": 101,
+            "scans_performed": 0,
+            "support_evaluations": 75,
+            "itemsets_discovered": 16
+          }
+        },
+        {
+          "candidate_cap": 250,
+          "n_itemsets": 121,
+          "n_rules": 210,
+          "itemset_recall": 0.045335,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.002199,
+          "rule_precision": 1.0,
+          "fit_time_s": 0.6543,
+          "speedup_factor": 13.07,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 3: 251 candidates exceeds max_candidates=250.",
+          "level_halted": 3,
+          "candidates_generated_at_level": 251,
+          "candidates_remaining_at_level": 251,
+          "peak_candidates": 251,
+          "counters": {
+            "candidates_generated": 446,
+            "joins_attempted": 434,
+            "scans_performed": 383520,
+            "support_evaluations": 195,
+            "itemsets_discovered": 121
+          }
+        },
+        {
+          "candidate_cap": 500,
+          "n_itemsets": 479,
+          "n_rules": 500,
+          "itemset_recall": 0.179468,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.005237,
+          "rule_precision": 1.0,
+          "fit_time_s": 1.1884,
+          "speedup_factor": 7.2,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 3: 501 candidates exceeds max_candidates=500.",
+          "level_halted": 3,
+          "candidates_generated_at_level": 501,
+          "candidates_remaining_at_level": 501,
+          "peak_candidates": 501,
+          "counters": {
+            "candidates_generated": 1091,
+            "joins_attempted": 1433,
+            "scans_performed": 1645940,
+            "support_evaluations": 590,
+            "itemsets_discovered": 479
+          }
+        },
+        {
+          "candidate_cap": 1000,
+          "n_itemsets": 2669,
+          "n_rules": 1000,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.010473,
+          "rule_precision": 1.0,
+          "fit_time_s": 4.4878,
+          "speedup_factor": 1.91,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 3: 1001 candidates exceeds max_candidates=1000.",
+          "level_halted": 3,
+          "candidates_generated_at_level": 1001,
+          "candidates_remaining_at_level": 1001,
+          "peak_candidates": 1001,
+          "counters": {
+            "candidates_generated": 2892,
+            "joins_attempted": 6698,
+            "scans_performed": 9003132,
+            "support_evaluations": 2892,
+            "itemsets_discovered": 2669
+          }
+        },
+        {
+          "candidate_cap": 2500,
+          "n_itemsets": 2669,
+          "n_rules": 2500,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.026183,
+          "rule_precision": 1.0,
+          "fit_time_s": 4.7262,
+          "speedup_factor": 1.81,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 4: 2501 candidates exceeds max_candidates=2500.",
+          "level_halted": 4,
+          "candidates_generated_at_level": 2501,
+          "candidates_remaining_at_level": 2501,
+          "peak_candidates": 2501,
+          "counters": {
+            "candidates_generated": 2892,
+            "joins_attempted": 6698,
+            "scans_performed": 9003132,
+            "support_evaluations": 2892,
+            "itemsets_discovered": 2669
+          }
+        },
+        {
+          "candidate_cap": 5000,
+          "n_itemsets": 2669,
+          "n_rules": 5000,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.052366,
+          "rule_precision": 1.0,
+          "fit_time_s": 5.243,
+          "speedup_factor": 1.63,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 4: 5001 candidates exceeds max_candidates=5000.",
+          "level_halted": 4,
+          "candidates_generated_at_level": 5001,
+          "candidates_remaining_at_level": 5001,
+          "peak_candidates": 5001,
+          "counters": {
+            "candidates_generated": 2892,
+            "joins_attempted": 6698,
+            "scans_performed": 9003132,
+            "support_evaluations": 2892,
+            "itemsets_discovered": 2669
+          }
+        }
+      ]
+    },
+    "adult_census": {
+      "baseline": {
+        "n_itemsets": 103,
+        "n_rules": 738,
+        "fit_time_s": 2.699,
+        "status": "EXACT",
+        "is_degraded": false,
+        "counters": {
+          "trees_constructed": 24,
+          "nodes_created": 691,
+          "tree_nodes_created": 691,
+          "paths_traversed": 664,
+          "candidates_generated": 103,
+          "support_evaluations": 103,
+          "itemsets_discovered": 103
+        }
+      },
+      "records": [
+        {
+          "candidate_cap": 50,
+          "n_itemsets": 50,
+          "n_rules": 8,
+          "itemset_recall": 0.485437,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.01084,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.4338,
+          "speedup_factor": 1.11,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 3: 51 candidates exceeds max_candidates=50.",
+          "level_halted": 3,
+          "candidates_generated_at_level": 51,
+          "candidates_remaining_at_level": 51,
+          "peak_candidates": 51,
+          "counters": {
+            "trees_constructed": 13,
+            "nodes_created": 636,
+            "tree_nodes_created": 636,
+            "paths_traversed": 581,
+            "candidates_generated": 51,
+            "support_evaluations": 51,
+            "itemsets_discovered": 50
+          }
+        },
+        {
+          "candidate_cap": 100,
+          "n_itemsets": 100,
+          "n_rules": 35,
+          "itemset_recall": 0.970874,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.047425,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.5,
+          "speedup_factor": 1.08,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 3: 101 candidates exceeds max_candidates=100.",
+          "level_halted": 3,
+          "candidates_generated_at_level": 101,
+          "candidates_remaining_at_level": 101,
+          "peak_candidates": 101,
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 101,
+            "support_evaluations": 101,
+            "itemsets_discovered": 100
+          }
+        },
+        {
+          "candidate_cap": 250,
+          "n_itemsets": 103,
+          "n_rules": 250,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.338753,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.7025,
+          "speedup_factor": 1.0,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 3: 251 candidates exceeds max_candidates=250.",
+          "level_halted": 3,
+          "candidates_generated_at_level": 251,
+          "candidates_remaining_at_level": 251,
+          "peak_candidates": 251,
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 103,
+            "support_evaluations": 103,
+            "itemsets_discovered": 103
+          }
+        },
+        {
+          "candidate_cap": 500,
+          "n_itemsets": 103,
+          "n_rules": 500,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.677507,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.4656,
+          "speedup_factor": 1.09,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 4: 501 candidates exceeds max_candidates=500.",
+          "level_halted": 4,
+          "candidates_generated_at_level": 501,
+          "candidates_remaining_at_level": 501,
+          "peak_candidates": 501,
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 103,
+            "support_evaluations": 103,
+            "itemsets_discovered": 103
+          }
+        },
+        {
+          "candidate_cap": 1000,
+          "n_itemsets": 103,
+          "n_rules": 738,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.6441,
+          "speedup_factor": 1.02,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 708,
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 103,
+            "support_evaluations": 103,
+            "itemsets_discovered": 103
+          }
+        },
+        {
+          "candidate_cap": 2500,
+          "n_itemsets": 103,
+          "n_rules": 738,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.3878,
+          "speedup_factor": 1.13,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 708,
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 103,
+            "support_evaluations": 103,
+            "itemsets_discovered": 103
+          }
+        },
+        {
+          "candidate_cap": 5000,
+          "n_itemsets": 103,
+          "n_rules": 738,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.5683,
+          "speedup_factor": 1.05,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 708,
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 103,
+            "support_evaluations": 103,
+            "itemsets_discovered": 103
+          }
+        }
+      ]
+    },
+    "bms_pos": {
+      "baseline": {
+        "n_itemsets": 59,
+        "n_rules": 56,
+        "fit_time_s": 36.5727,
+        "status": "EXACT",
+        "is_degraded": false,
+        "counters": {
+          "intersections_performed": 451,
+          "tid_elements_scanned": 49081638,
+          "candidates_generated": 478,
+          "support_evaluations": 478,
+          "itemsets_discovered": 59
+        }
+      },
+      "records": [
+        {
+          "candidate_cap": 50,
+          "n_itemsets": 50,
+          "n_rules": 30,
+          "itemset_recall": 0.847458,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.535714,
+          "rule_precision": 1.0,
+          "fit_time_s": 31.7524,
+          "speedup_factor": 1.15,
+          "status_": "DEGRADED",
+          "is_degraded_": true,
+          "future_candidates_status": "UNKNOWN",
+          "termination_reason_": "Candidate explosion detected at level 3: 51 candidates exceeds max_candidates=50.",
+          "level_halted": 3,
+          "candidates_generated_at_level": 51,
+          "candidates_remaining_at_level": 51,
+          "peak_candidates": 51,
+          "counters": {
+            "intersections_performed": 203,
+            "tid_elements_scanned": 24086098,
+            "candidates_generated": 230,
+            "support_evaluations": 230,
+            "itemsets_discovered": 50
+          }
+        },
+        {
+          "candidate_cap": 100,
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 33.3185,
+          "speedup_factor": 1.1,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 78,
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "candidate_cap": 250,
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 32.7059,
+          "speedup_factor": 1.12,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 78,
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "candidate_cap": 500,
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 32.636,
+          "speedup_factor": 1.12,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 78,
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "candidate_cap": 1000,
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 32.3415,
+          "speedup_factor": 1.13,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 78,
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "candidate_cap": 2500,
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 32.6153,
+          "speedup_factor": 1.12,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 78,
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "candidate_cap": 5000,
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 31.3911,
+          "speedup_factor": 1.17,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "termination_reason_": null,
+          "level_halted": null,
+          "candidates_generated_at_level": null,
+          "candidates_remaining_at_level": null,
+          "peak_candidates": 78,
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        }
+      ]
+    }
+  },
+  "length_sweeps": {
+    "chess": {
+      "baseline": {
+        "n_itemsets": 2669,
+        "n_rules": 95482,
+        "fit_time_s": 8.5508,
+        "status": "EXACT",
+        "is_degraded": false,
+        "counters": {
+          "candidates_generated": 2892,
+          "joins_attempted": 6698,
+          "scans_performed": 9003132,
+          "support_evaluations": 2892,
+          "itemsets_discovered": 2669
+        }
+      },
+      "records": [
+        {
+          "max_len": 1,
+          "label": "1",
+          "n_itemsets": 16,
+          "n_rules": 0,
+          "itemset_recall": 0.005995,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 0.534,
+          "speedup_factor": 16.01,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "candidates_generated": 75,
+            "joins_attempted": 0,
+            "scans_performed": 0,
+            "support_evaluations": 75,
+            "itemsets_discovered": 16
+          }
+        },
+        {
+          "max_len": 2,
+          "label": "2",
+          "n_itemsets": 121,
+          "n_rules": 210,
+          "itemset_recall": 0.045335,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.002199,
+          "rule_precision": 1.0,
+          "fit_time_s": 0.6396,
+          "speedup_factor": 13.37,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "candidates_generated": 195,
+            "joins_attempted": 120,
+            "scans_performed": 383520,
+            "support_evaluations": 195,
+            "itemsets_discovered": 121
+          }
+        },
+        {
+          "max_len": 3,
+          "label": "3",
+          "n_itemsets": 479,
+          "n_rules": 2358,
+          "itemset_recall": 0.179468,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.024696,
+          "rule_precision": 1.0,
+          "fit_time_s": 1.2347,
+          "speedup_factor": 6.93,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "candidates_generated": 590,
+            "joins_attempted": 642,
+            "scans_performed": 1645940,
+            "support_evaluations": 590,
+            "itemsets_discovered": 479
+          }
+        },
+        {
+          "max_len": 4,
+          "label": "4",
+          "n_itemsets": 1169,
+          "n_rules": 12018,
+          "itemset_recall": 0.437992,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.125867,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.7907,
+          "speedup_factor": 3.06,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "candidates_generated": 1346,
+            "joins_attempted": 1901,
+            "scans_performed": 4062116,
+            "support_evaluations": 1346,
+            "itemsets_discovered": 1169
+          }
+        },
+        {
+          "max_len": 5,
+          "label": "5",
+          "n_itemsets": 1953,
+          "n_rules": 35538,
+          "itemset_recall": 0.731735,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.372196,
+          "rule_precision": 1.0,
+          "fit_time_s": 5.9677,
+          "speedup_factor": 1.43,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "candidates_generated": 2160,
+            "joins_attempted": 3757,
+            "scans_performed": 6663660,
+            "support_evaluations": 2160,
+            "itemsets_discovered": 1953
+          }
+        },
+        {
+          "max_len": null,
+          "label": "None (Exact)",
+          "n_itemsets": 2669,
+          "n_rules": 95482,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 11.0661,
+          "speedup_factor": 0.77,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "candidates_generated": 2892,
+            "joins_attempted": 6698,
+            "scans_performed": 9003132,
+            "support_evaluations": 2892,
+            "itemsets_discovered": 2669
+          }
+        }
+      ]
+    },
+    "adult_census": {
+      "baseline": {
+        "n_itemsets": 103,
+        "n_rules": 738,
+        "fit_time_s": 2.699,
+        "status": "EXACT",
+        "is_degraded": false,
+        "counters": {
+          "trees_constructed": 24,
+          "nodes_created": 691,
+          "tree_nodes_created": 691,
+          "paths_traversed": 664,
+          "candidates_generated": 103,
+          "support_evaluations": 103,
+          "itemsets_discovered": 103
+        }
+      },
+      "records": [
+        {
+          "max_len": 1,
+          "label": "1",
+          "n_itemsets": 10,
+          "n_rules": 0,
+          "itemset_recall": 0.097087,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 0.046,
+          "speedup_factor": 58.71,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "trees_constructed": 1,
+            "nodes_created": 1,
+            "tree_nodes_created": 1,
+            "paths_traversed": 0,
+            "candidates_generated": 10,
+            "support_evaluations": 10,
+            "itemsets_discovered": 10
+          }
+        },
+        {
+          "max_len": 2,
+          "label": "2",
+          "n_itemsets": 41,
+          "n_rules": 62,
+          "itemset_recall": 0.398058,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.084011,
+          "rule_precision": 1.0,
+          "fit_time_s": 0.0288,
+          "speedup_factor": 93.64,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "trees_constructed": 1,
+            "nodes_created": 1,
+            "tree_nodes_created": 1,
+            "paths_traversed": 0,
+            "candidates_generated": 41,
+            "support_evaluations": 41,
+            "itemsets_discovered": 41
+          }
+        },
+        {
+          "max_len": 3,
+          "label": "3",
+          "n_itemsets": 77,
+          "n_rules": 278,
+          "itemset_recall": 0.747573,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.376694,
+          "rule_precision": 1.0,
+          "fit_time_s": 3.2279,
+          "speedup_factor": 0.84,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "trees_constructed": 9,
+            "nodes_created": 600,
+            "tree_nodes_created": 600,
+            "paths_traversed": 588,
+            "candidates_generated": 77,
+            "support_evaluations": 77,
+            "itemsets_discovered": 77
+          }
+        },
+        {
+          "max_len": 4,
+          "label": "4",
+          "n_itemsets": 97,
+          "n_rules": 558,
+          "itemset_recall": 0.941748,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.756098,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.823,
+          "speedup_factor": 0.96,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "trees_constructed": 19,
+            "nodes_created": 672,
+            "tree_nodes_created": 672,
+            "paths_traversed": 650,
+            "candidates_generated": 97,
+            "support_evaluations": 97,
+            "itemsets_discovered": 97
+          }
+        },
+        {
+          "max_len": 5,
+          "label": "5",
+          "n_itemsets": 103,
+          "n_rules": 738,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 2.668,
+          "speedup_factor": 1.01,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 103,
+            "support_evaluations": 103,
+            "itemsets_discovered": 103
+          }
+        },
+        {
+          "max_len": null,
+          "label": "None (Exact)",
+          "n_itemsets": 103,
+          "n_rules": 738,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 3.3822,
+          "speedup_factor": 0.8,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "trees_constructed": 24,
+            "nodes_created": 691,
+            "tree_nodes_created": 691,
+            "paths_traversed": 664,
+            "candidates_generated": 103,
+            "support_evaluations": 103,
+            "itemsets_discovered": 103
+          }
+        }
+      ]
+    },
+    "bms_pos": {
+      "baseline": {
+        "n_itemsets": 59,
+        "n_rules": 56,
+        "fit_time_s": 36.5727,
+        "status": "EXACT",
+        "is_degraded": false,
+        "counters": {
+          "intersections_performed": 451,
+          "tid_elements_scanned": 49081638,
+          "candidates_generated": 478,
+          "support_evaluations": 478,
+          "itemsets_discovered": 59
+        }
+      },
+      "records": [
+        {
+          "max_len": 1,
+          "label": "1",
+          "n_itemsets": 27,
+          "n_rules": 0,
+          "itemset_recall": 0.457627,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 29.1366,
+          "speedup_factor": 1.26,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "intersections_performed": 0,
+            "tid_elements_scanned": 0,
+            "candidates_generated": 27,
+            "support_evaluations": 27,
+            "itemsets_discovered": 27
+          }
+        },
+        {
+          "max_len": 2,
+          "label": "2",
+          "n_itemsets": 54,
+          "n_rules": 35,
+          "itemset_recall": 0.915254,
+          "itemset_precision": 1.0,
+          "rule_recall": 0.625,
+          "rule_precision": 1.0,
+          "fit_time_s": 29.6298,
+          "speedup_factor": 1.23,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "intersections_performed": 351,
+            "tid_elements_scanned": 40256606,
+            "candidates_generated": 378,
+            "support_evaluations": 378,
+            "itemsets_discovered": 54
+          }
+        },
+        {
+          "max_len": 3,
+          "label": "3",
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 29.6946,
+          "speedup_factor": 1.23,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "intersections_performed": 450,
+            "tid_elements_scanned": 49027330,
+            "candidates_generated": 477,
+            "support_evaluations": 477,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "max_len": 4,
+          "label": "4",
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 30.1698,
+          "speedup_factor": 1.21,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "max_len": 5,
+          "label": "5",
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 30.6323,
+          "speedup_factor": 1.19,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        },
+        {
+          "max_len": null,
+          "label": "None (Exact)",
+          "n_itemsets": 59,
+          "n_rules": 56,
+          "itemset_recall": 1.0,
+          "itemset_precision": 1.0,
+          "rule_recall": 1.0,
+          "rule_precision": 1.0,
+          "fit_time_s": 32.2563,
+          "speedup_factor": 1.13,
+          "status_": "EXACT",
+          "is_degraded_": false,
+          "future_candidates_status": "EXHAUSTED",
+          "counters": {
+            "intersections_performed": 451,
+            "tid_elements_scanned": 49081638,
+            "candidates_generated": 478,
+            "support_evaluations": 478,
+            "itemsets_discovered": 59
+          }
+        }
+      ]
+    }
+  }
+}

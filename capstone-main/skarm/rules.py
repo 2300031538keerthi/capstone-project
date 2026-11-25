@@ -1,0 +1,232 @@
+"""Association rule generation and evaluation metrics."""
+
+import math
+from itertools import combinations
+from typing import Dict, List, FrozenSet, Optional, Union, Any
+import pandas as pd
+import numpy as np
+
+from skarm.pruning import CandidateExplosionError, DegradedModeWarning
+
+
+def compute_leverage(supp_ac: float, supp_a: float, supp_c: float) -> float:
+    """Compute leverage = supp(A U C) - (supp(A) * supp(C))."""
+    return float(supp_ac - (supp_a * supp_c))
+
+
+def compute_conviction(supp_c: float, confidence: float) -> float:
+    """Compute conviction = (1 - supp(C)) / (1 - confidence)."""
+    if math.isclose(confidence, 1.0, abs_tol=1e-12) or confidence >= 1.0:
+        return float("inf")
+    denom = 1.0 - confidence
+    if denom <= 0.0:
+        return float("inf")
+    return float((1.0 - supp_c) / denom)
+
+
+def compute_zhangs_metric(supp_ac: float, supp_a: float, supp_c: float) -> float:
+    """Compute Zhang's association metric (-1 to +1)."""
+    num = supp_ac - (supp_a * supp_c)
+    if math.isclose(num, 0.0, abs_tol=1e-12):
+        return 0.0
+
+    denom = max(
+        supp_ac * (1.0 - supp_a),
+        supp_a * (supp_c - supp_ac),
+    )
+
+    if denom <= 1e-12:
+        return 0.0
+    val = float(num / denom)
+    return float(max(-1.0, min(1.0, val)))
+
+
+def association_rules(
+    frequent_itemsets: Dict[FrozenSet[int], float],
+    metric: str = "confidence",
+    min_threshold: float = 0.5,
+    feature_names: Optional[List[str]] = None,
+    pruning_policy: Optional[Any] = None,
+) -> pd.DataFrame:
+    """Generate association rules from frequent itemsets.
+
+    Parameters
+    ----------
+    frequent_itemsets : dict
+        Mapping from frozenset of item indices to support values.
+    metric : str, default='confidence'
+        Metric used for rule filtering ('confidence', 'lift', 'support', 'leverage', 'conviction').
+    min_threshold : float, default=0.5
+        Minimum metric threshold to keep a rule.
+    feature_names : list of str, optional
+        Names of features/items for human-readable rule representations.
+
+    Returns
+    -------
+    rules : pd.DataFrame
+        DataFrame with columns:
+        - antecedent
+        - consequent
+        - antecedent_support
+        - consequent_support
+        - support
+        - confidence
+        - lift
+        - leverage
+        - conviction
+        - zhangs_metric
+    """
+    valid_metrics = {"confidence", "lift", "support", "leverage", "conviction", "zhangs_metric"}
+    if metric not in valid_metrics:
+        raise ValueError(f"Unknown metric '{metric}'. Choose from {valid_metrics}")
+
+    if feature_names is not None and frequent_itemsets:
+        max_idx = max(max(itemset) for itemset in frequent_itemsets)
+        if max_idx >= len(feature_names):
+            raise ValueError(
+                f"feature_names has length {len(feature_names)} but itemset index {max_idx} "
+                "is out of range; feature_names must cover every item index."
+            )
+
+    records = []
+
+    # Filter itemsets with size >= 2
+    multi_itemsets = [
+        (itemset, supp)
+        for itemset, supp in frequent_itemsets.items()
+        if len(itemset) >= 2
+    ]
+
+    # Deterministic processing (NT-5)
+    multi_itemsets.sort(key=lambda x: (len(x[0]), sorted(list(x[0]))))
+
+    combo_count = 0
+    halt_rules = False
+    for itemset, supp_ac in multi_itemsets:
+        if halt_rules:
+            break
+        items = sorted(list(itemset))
+        k = len(items)
+
+        if pruning_policy is not None:
+            max_cands = getattr(pruning_policy, "max_candidates", None)
+            on_expl = getattr(pruning_policy, "on_candidate_explosion", "degrade")
+            if max_cands is not None and combo_count > max_cands:
+                can_proceed = pruning_policy.check_budget(
+                    candidate_count=combo_count,
+                    level=k,
+                )
+                if on_expl == "raise":
+                    raise CandidateExplosionError("Candidate limit exceeded during rule generation")
+                if not can_proceed or on_expl == "truncate":
+                    halt_rules = True
+                    break
+            elif not pruning_policy.check_budget(candidate_count=combo_count, level=k):
+                halt_rules = True
+                break
+
+        # Generate all non-empty proper subsets as antecedents
+        for r in range(1, k):
+            if halt_rules:
+                break
+            for ante_combo in combinations(items, r):
+                combo_count += 1
+                if pruning_policy is not None:
+                    max_cands = getattr(pruning_policy, "max_candidates", None)
+                    on_expl = getattr(pruning_policy, "on_candidate_explosion", "degrade")
+                    if max_cands is not None and combo_count > max_cands:
+                        can_proceed = pruning_policy.check_budget(
+                            candidate_count=combo_count,
+                            level=k,
+                        )
+                        if on_expl == "raise":
+                            raise CandidateExplosionError("Candidate limit exceeded during rule generation")
+                        if not can_proceed or on_expl == "truncate":
+                            halt_rules = True
+                            break
+                    elif (combo_count & 511) == 0:
+                        if not pruning_policy.check_budget(
+                            candidate_count=combo_count,
+                            level=k,
+                        ):
+                            halt_rules = True
+                            break
+                ante = frozenset(ante_combo)
+                cons = itemset - ante
+
+                supp_a = frequent_itemsets.get(ante)
+                supp_c = frequent_itemsets.get(cons)
+
+                # Skip if support of antecedent or consequent is not in frequent itemsets
+                if supp_a is None or supp_c is None:
+                    continue
+
+                if supp_a <= 0.0:
+                    continue
+
+                conf = supp_ac / supp_a
+                lift = conf / supp_c if supp_c > 0.0 else 0.0
+                lev = compute_leverage(supp_ac, supp_a, supp_c)
+                conv = compute_conviction(supp_c, conf)
+                zhang = compute_zhangs_metric(supp_ac, supp_a, supp_c)
+
+                # Metric filtering
+                metric_val = {
+                    "confidence": conf,
+                    "lift": lift,
+                    "support": supp_ac,
+                    "leverage": lev,
+                    "conviction": conv,
+                    "zhangs_metric": zhang,
+                }[metric]
+
+                if metric_val >= min_threshold - 1e-12:
+                    records.append({
+                        "antecedent": ante,
+                        "consequent": cons,
+                        "antecedent_support": float(supp_a),
+                        "consequent_support": float(supp_c),
+                        "support": float(supp_ac),
+                        "confidence": float(conf),
+                        "lift": float(lift),
+                        "leverage": float(lev),
+                        "conviction": float(conv),
+                        "zhangs_metric": float(zhang),
+                    })
+
+    if pruning_policy is not None:
+        on_expl = getattr(pruning_policy, "on_candidate_explosion", "degrade")
+        max_cands = getattr(pruning_policy, "max_candidates", None)
+        if on_expl in ("truncate", "degrade") and max_cands is not None:
+            if len(records) > max_cands:
+                records = records[:max_cands]
+
+    if not records:
+        df = pd.DataFrame(columns=[
+            "antecedent", "consequent", "antecedent_support", "consequent_support",
+            "support", "confidence", "lift", "leverage", "conviction", "zhangs_metric"
+        ])
+        return df
+
+    df = pd.DataFrame(records)
+
+    # Deterministic sorting (NT-5): stable sort by metric descending, then
+    # support descending. Stability preserves the deterministic generation
+    # order (itemset length, then sorted item indices) for exact ties, which
+    # the default unstable quicksort does not guarantee.
+    df = df.sort_values(
+        by=[metric, "support"],
+        ascending=[False, False],
+        kind="stable",
+    )
+    df = df.reset_index(drop=True)
+
+    # Add named antecedent/consequent if feature_names provided
+    if feature_names is not None:
+        def to_names(f_set):
+            return frozenset(feature_names[i] for i in f_set)
+
+        df["antecedent_names"] = df["antecedent"].apply(to_names)
+        df["consequent_names"] = df["consequent"].apply(to_names)
+
+    return df
